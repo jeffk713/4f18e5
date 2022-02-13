@@ -25,7 +25,7 @@ class Conversations(APIView):
                 Conversation.objects.filter(Q(user1=user_id) | Q(user2=user_id))
                 .prefetch_related(
                     Prefetch(
-                        "messages", queryset=Message.objects.order_by("-createdAt")
+                        "messages", queryset=Message.objects.order_by("createdAt")
                     )
                 )
                 .all()
@@ -43,7 +43,8 @@ class Conversations(APIView):
                 }
 
                 # set properties for notification count and latest message preview
-                convo_dict["latestMessageText"] = convo_dict["messages"][0]["text"]
+                num_of_messages = len(convo_dict["messages"])
+                convo_dict["latestMessageText"] = convo_dict["messages"][num_of_messages-1]["text"]
 
                 # set a property "otherUser" so that frontend will have easier access
                 user_fields = ["id", "username", "photoUrl"]
@@ -63,6 +64,7 @@ class Conversations(APIView):
                 key=lambda convo: convo["messages"][0]["createdAt"],
                 reverse=True,
             )
+
             return JsonResponse(
                 conversations_response,
                 safe=False,

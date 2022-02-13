@@ -19,6 +19,8 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
   socket.on("new-message", (data) => {
+    console.log('new message in client!!');
+    console.log(data);
     store.dispatch(setNewMessage(data.message, data.sender));
   });
 });

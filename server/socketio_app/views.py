@@ -24,6 +24,8 @@ def go_online(sid, user_id):
 
 @sio.on("new-message")
 def new_message(sid, message):
+    print('message recieved in server')
+    print(message)
     sio.emit(
         "new-message",
         {"message": message["message"], "sender": message["sender"]},
