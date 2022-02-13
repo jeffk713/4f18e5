@@ -103,6 +103,8 @@ export const postMessage = (body) => async (dispatch) => {
       dispatch(setNewMessage(data.message));
     }
 
+    dispatch(fetchConversations())
+
     sendMessage(data, body);
   } catch (error) {
     console.error(error);
