@@ -5,6 +5,7 @@ import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
+import { readMessages } from '../../store/utils/thunkCreators';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,18 +23,23 @@ const useStyles = makeStyles((theme) => ({
 
 const Chat = (props) => {
   const classes = useStyles();
-  const { conversation } = props;
+  const { conversation, readMessages } = props;
   const { otherUser } = conversation;
 
   const handleClick = async(conversation) => {
     props.setActiveChat(conversation.otherUser.username);
-    console.log(conversation)
-    const reqBody = {
-      conversationId: conversation.id,
-      recipientId: conversation.otherUser.id
-    }
-    const res = await axios.patch("/api/messages", reqBody);
-    console.log('PATCH RES: ', res)
+
+    const latsMessageReadStatus = conversation.messages[conversation.messages.length - 1].isRead;
+    const lastMessageSenderId = conversation.messages[conversation.messages.length - 1].senderId;
+    const otherUserId = conversation.otherUser.id;
+
+    if (lastMessageSenderId === otherUserId && !latsMessageReadStatus) {
+      const reqBody = {
+        conversationId: conversation.id,
+        recipientId: conversation.otherUser.id
+      };
+      await readMessages(reqBody)
+    };
   };
 
   return (
@@ -53,6 +59,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
+    },
+    readMessages: (body) => {
+      dispatch(readMessages(body))
     }
   };
 };

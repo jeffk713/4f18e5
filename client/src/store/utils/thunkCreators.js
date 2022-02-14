@@ -117,3 +117,18 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
     console.error(error);
   }
 };
+
+const emitReadMessages = () => {
+  //send lastReadMessage data to server
+}
+
+export const readMessages = (body) => async (dispatch) => {
+  try {
+    const res = await axios.patch("/api/messages", body);
+    console.log('PATCH RES: ', res.data)
+
+
+  } catch (error) {
+    console.error(error);
+  }
+}

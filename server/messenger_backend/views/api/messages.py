@@ -50,22 +50,26 @@ class Messages(APIView):
             return HttpResponse(status=500)
 
     def patch(self, request):
-        user = get_user(request)
-        if user.is_anonymous:
-            return HttpResponse(status=401)
+        # try:
+            user = get_user(request)
+            
+            if user.is_anonymous:
+                return HttpResponse(status=401)
 
-        body = request.data
-        sender_id = user.id
-        recipient_id = body.get("recipientId")
-        conversation_id = body.get("conversationId")
+            body = request.data
+            sender_id = user.id
+            recipient_id = body.get("recipientId")
+            conversation_id = body.get("conversationId")
 
-        messages = Message.objects.filter(Q(conversation=conversation_id)).order_by("-createdAt")
-
-        for msg in messages:
-            if msg.isRead:
-                break
-            msg.isRead = True
-            msg.save()
-            print(msg.to_dict())
-
-        return JsonResponse({"response": f'messages in coversation {conversation_id} marked as read!'})
+            unread_messages = Message.objects.filter(Q(conversation=conversation_id) & Q(isRead=False))
+            lastReadMessageId = None
+            for msg in unread_messages:
+                msg.isRead = True
+                msg.save()
+                lastReadMessageId = msg.id
+                print(msg.to_dict())
+                print(lastReadMessageId)
+            print('PATCH END POINT HIT')
+            return JsonResponse({"conversationId": conversation_id, "lastReadMessageId": lastReadMessageId})
+        # except Exception as e:
+        #     return HttpResponse(status=500)
