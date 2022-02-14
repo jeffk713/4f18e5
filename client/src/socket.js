@@ -20,7 +20,11 @@ socket.on("connect", () => {
   });
   
   socket.on("new-message", (data) => {
-    store.dispatch(setNewMessage(data.message, data.sender));
+    const userId = store.getState().user.id;
+    const recipientId = data.recipientId
+    if (userId === recipientId) {
+      store.dispatch(setNewMessage(data.message, data.sender));
+    }
   });
 });
 
