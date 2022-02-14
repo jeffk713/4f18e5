@@ -1,4 +1,5 @@
 import React from "react";
+import axios from 'axios'
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,8 +25,15 @@ const Chat = (props) => {
   const { conversation } = props;
   const { otherUser } = conversation;
 
-  const handleClick = async (conversation) => {
-    await props.setActiveChat(conversation.otherUser.username);
+  const handleClick = async(conversation) => {
+    props.setActiveChat(conversation.otherUser.username);
+    console.log(conversation)
+    const reqBody = {
+      conversationId: conversation.id,
+      recipientId: conversation.otherUser.id
+    }
+    const res = await axios.patch("/api/messages", reqBody);
+    console.log('PATCH RES: ', res)
   };
 
   return (

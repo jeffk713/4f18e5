@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from messenger_backend.models import Conversation, Message
 from online_users import online_users
 from rest_framework.views import APIView
-
+from django.db.models import Q
 
 class Messages(APIView):
     """expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)"""
@@ -11,7 +11,7 @@ class Messages(APIView):
     def post(self, request):
         try:
             user = get_user(request)
-
+            print(request.data)
             if user.is_anonymous:
                 return HttpResponse(status=401)
 
@@ -48,3 +48,24 @@ class Messages(APIView):
             return JsonResponse({"message": message_json, "sender": sender})
         except Exception as e:
             return HttpResponse(status=500)
+
+    def patch(self, request):
+        user = get_user(request)
+        if user.is_anonymous:
+            return HttpResponse(status=401)
+
+        body = request.data
+        sender_id = user.id
+        recipient_id = body.get("recipientId")
+        conversation_id = body.get("conversationId")
+
+        messages = Message.objects.filter(Q(conversation=conversation_id)).order_by("-createdAt")
+
+        for msg in messages:
+            if msg.isRead:
+                break
+            msg.isRead = True
+            msg.save()
+            print(msg.to_dict())
+
+        return JsonResponse({"response": f'messages in coversation {conversation_id} marked as read!'})
