@@ -34,19 +34,18 @@ export const addMessageToStore = (state, payload) => {
 };
 
 export const updateReadMessageToStore = (state, conversationId) => {
-  const readConvo = state.find((convo) => convo.id === conversationId);
-
-  for (let i = readConvo.messages.length - 1; i >= 0; i--) {
-    if (readConvo.messages[i].isRead){ 
-      break;
-    }
-    readConvo.messages[i].isRead = true;
-  };
-  
-  readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null }
-
   return state.map((convo) => {
     if (convo.id === conversationId) {
+      const readConvo = { ...convo }
+      for (let i = readConvo.messages.length - 1; i >= 0; i--) {
+        if (readConvo.messages[i].isRead){ 
+          break;
+        }
+        readConvo.messages[i].isRead = true;
+      };
+
+      readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null }
+
       return readConvo;
     } else {
       return convo;

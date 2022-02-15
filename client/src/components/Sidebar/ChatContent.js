@@ -1,5 +1,8 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { connect } from "react-redux";
+
+import { Box, Typography, Badge } from "@material-ui/core";
+import { Mail as MailIcon } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,8 +26,10 @@ const useStyles = makeStyles((theme) => ({
 const ChatContent = (props) => {
   const classes = useStyles();
 
-  const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { conversation, user } = props;
+  const { latestMessageText, otherUser, unreadMessageData } = conversation;
+  const { numOfUnreadMessages, senderId } = unreadMessageData;
+  const { id: authUserId } = user;
 
   return (
     <Box className={classes.root}>
@@ -36,8 +41,20 @@ const ChatContent = (props) => {
           {latestMessageText}
         </Typography>
       </Box>
+      {
+        !!numOfUnreadMessages && senderId !== authUserId &&
+        <Badge badgeContent={numOfUnreadMessages} color="primary">
+          <MailIcon />
+        </Badge>
+      }
     </Box>
   );
 };
 
-export default ChatContent;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
+  }
+}
+
+export default connect(mapStateToProps)(ChatContent);
