@@ -34,13 +34,12 @@ export const setNewMessage = (message, sender) => {
   };
 };
 
-export const readNewMessages = (lastReadMessageData) => {
-  const { conversationId, lastReadMessageId } = lastReadMessageData
+export const readNewMessages = (conversationId) => {
   return {
     type: READ_MESSAGES,
-    payload: { conversationId, lastReadMessageId }
-  }
-}
+    payload: conversationId,
+  };
+};
 
 export const addOnlineUser = (id) => {
   return {

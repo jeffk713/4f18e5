@@ -4,7 +4,9 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  readNewMessages,
 } from "./store/conversations";
+import { readMessages } from './store/utils/thunkCreators';
 
 const socket = io(window.location.origin);
 
@@ -20,11 +22,30 @@ socket.on("connect", () => {
   });
   
   socket.on("new-message", (data) => {
+    console.log("SOCKET CLIENT SET MESSAGE", data)
     const userId = store.getState().user.id;
-    const recipientId = data.recipientId
+    const recipientId = data.recipientId;
     if (userId === recipientId) {
       store.dispatch(setNewMessage(data.message, data.sender));
     }
+
+    const convoId = data.message.conversationId;
+    const convo = store.getState().conversations.find((convo) => convo.id === convoId);
+    const activeConvo = store.getState().activeConversation;
+
+    if (convo && activeConvo) {
+      const otherUser = convo.otherUser.username;
+      if (otherUser === activeConvo) {
+        store.dispatch(readMessages({ conversationId: convoId }))
+      };
+    };
+
+  });
+
+  socket.on("read-messages", (data) => {
+    console.log("SOCKET CLIENT READ MESSAGE", data)
+    const { conversationId } = data
+    store.dispatch(readNewMessages(conversationId))
   });
 });
 

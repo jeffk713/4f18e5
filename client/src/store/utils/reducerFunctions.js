@@ -24,14 +24,13 @@ export const addMessageToStore = (state, payload) => {
   return newConversations
 };
 
-export const updateReadMessageToStore = (state, payload) => {
-  const { conversationId, lastReadMessageId } = payload;
-
+export const updateReadMessageToStore = (state, conversationId) => {
   const readConvo = state.find((convo) => convo.id === conversationId);
-  readConvo.lastReadMessageId = lastReadMessageId;
 
-  for (let i = readConvo.messages.length -1; i < 0; i --) {
-    if (readConvo.messages[i].isRead) break;
+  for (let i = readConvo.messages.length - 1; i >= 0; i--) {
+    if (readConvo.messages[i].isRead){ 
+      break;
+    }
     readConvo.messages[i].isRead = true;
   }
 

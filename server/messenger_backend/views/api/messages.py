@@ -58,19 +58,15 @@ class Messages(APIView):
 
             body = request.data
             sender_id = user.id
-            recipient_id = body.get("recipientId")
             conversation_id = body.get("conversationId")
 
             unread_messages = Message.objects.filter(Q(conversation=conversation_id) & Q(isRead=False))
-            lastReadMessage_id = None
             for msg in unread_messages:
                 msg.isRead = True
                 msg.save()
-                lastReadMessage_id = msg.id
                 print(msg.to_dict())
             print('PATCH END POINT HIT')
             
-            
-            return JsonResponse({"conversationId": conversation_id, "lastReadMessageId": lastReadMessage_id})
+            return JsonResponse({ "conversationId": conversation_id })
         # except Exception as e:
         #     return HttpResponse(status=500)

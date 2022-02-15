@@ -119,22 +119,18 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-const emitReadMessages = (lastReadMessageData) => {
-  const { lastReadMessageId, conversationId } = lastReadMessageData
-  socket.emit("read-messages", {
-    lastReadMessageId,
-    conversationId
-  });
-}
+const emitReadMessages = (conversationId) => {
+  socket.emit("read-messages", { conversationId });
+};
 
 export const readMessages = (body) => async (dispatch) => {
   try {
     const res = await axios.patch("/api/messages", body);
     console.log('PATCH RES: ', res.data)
-    const lastReadMessageData = res.data;
+    const { conversationId } = res.data;
 
-    dispatch(readNewMessages(lastReadMessageData))
-    emitReadMessages(lastReadMessageData)
+    dispatch(readNewMessages(conversationId))
+    emitReadMessages(conversationId)
   } catch (error) {
     console.error(error);
   }

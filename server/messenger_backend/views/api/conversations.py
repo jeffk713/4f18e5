@@ -46,19 +46,6 @@ class Conversations(APIView):
                         break
                 return len(unread_messages)
             
-            def get_last_read_message_id_for_user(messages, user_id):
-                reversed_messages = messages
-                reversed_messages.reverse()
-                
-                last_read_message_id = None
-                
-                for msg in reversed_messages:
-                    if msg["isRead"] == True and msg["senderId"] != user_id:
-                        last_read_message_id = msg["id"]
-                        break
-                return last_read_message_id
-
-            
             for convo in conversations:
                 convo_dict = {
                     "id": convo.id,
@@ -69,9 +56,6 @@ class Conversations(APIView):
                     "numUnreadMessages": get_num_unread_messages([
                         message.to_dict() for message in convo.messages.all()
                     ]),
-                    "lastReadMessageId": get_last_read_message_id_for_user([
-                        message.to_dict() for message in convo.messages.all()
-                    ], user_id)
                 }
                 print(convo_dict)
                 
