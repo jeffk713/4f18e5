@@ -11,17 +11,22 @@ export const addMessageToStore = (state, payload) => {
     return [newConvo, ...state];
   }
 
-  const newConversations = state.map((convo) => {
+  const updatedConversations = state.map((convo) => {
     if (convo.id === message.conversationId) {
-      const newConvo = { ...convo };
-      newConvo.messages = [...newConvo.messages, message];
-      newConvo.latestMessageText = message.text;
-      return newConvo;
+      const updatedConvo = { ...convo };
+      updatedConvo.messages = [...updatedConvo.messages, message];
+      updatedConvo.latestMessageText = message.text;
+      return updatedConvo;
     } else {
       return convo;
     }
   });
-  return newConversations
+
+  updatedConversations.sort((a, b) => {
+    return b.messages[b.messages.length - 1].id - a.messages[a.messages.length -1].id;
+  });
+
+  return updatedConversations;
 };
 
 export const updateReadMessageToStore = (state, conversationId) => {
@@ -32,7 +37,7 @@ export const updateReadMessageToStore = (state, conversationId) => {
       break;
     }
     readConvo.messages[i].isRead = true;
-  }
+  };
 
   return state.map((convo) => {
     if (convo.id === conversationId) {
