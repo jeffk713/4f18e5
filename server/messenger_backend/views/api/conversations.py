@@ -33,19 +33,22 @@ class Conversations(APIView):
 
             conversations_response = []
 
-            def get_num_unread_messages(messages):
-                # get message list ordered by latest one 
+            def get_unread_message_dict(messages):
+                # get message list ordered from lateset to oldest
                 reversed_messages = messages
                 reversed_messages.reverse()
                 unread_messages = []
-                
+                sender_id = None
+
                 for msg in reversed_messages:
                     if not msg["isRead"]:
                         unread_messages.append(msg)
+                        sender_id = msg["senderId"]
                     else:
                         break
-                return len(unread_messages)
-            
+
+                return { "numOfUnreadMessages": len(unread_messages), "senderId": sender_id }
+
             for convo in conversations:
                 convo_dict = {
                     "id": convo.id,
@@ -53,7 +56,7 @@ class Conversations(APIView):
                         message.to_dict(["id", "text", "senderId", "createdAt", "isRead"])
                         for message in convo.messages.all()
                     ],
-                    "numUnreadMessages": get_num_unread_messages([
+                    "unreadMessageData": get_unread_message_dict([
                         message.to_dict() for message in convo.messages.all()
                     ]),
                 }

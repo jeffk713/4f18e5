@@ -1,5 +1,4 @@
 import React from "react";
-import axios from 'axios'
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";

@@ -38,6 +38,8 @@ export const updateReadMessageToStore = (state, conversationId) => {
     }
     readConvo.messages[i].isRead = true;
   };
+  
+  readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null }
 
   return state.map((convo) => {
     if (convo.id === conversationId) {
@@ -93,15 +95,21 @@ export const addSearchedUsersToStore = (state, users) => {
 };
 
 export const addNewConvoToStore = (state, recipientId, message) => {
-  return state.map((convo) => {
+  const updatedConversations = state.map((convo) => {
     if (convo.otherUser.id === recipientId) {
-      const newConvo = { ...convo };
-      newConvo.id = message.conversationId
-      newConvo.messages = [...newConvo.messages, message];
-      newConvo.latestMessageText = message.text;
-      return newConvo;
+      const updatedConvo = { ...convo };
+      updatedConvo.id = message.conversationId
+      updatedConvo.messages = [...updatedConvo.messages, message];
+      updatedConvo.latestMessageText = message.text;
+      return updatedConvo;
     } else {
       return convo;
     }
   });
+
+  updatedConversations.sort((a, b) => {
+    return b.messages[b.messages.length - 1].id - a.messages[a.messages.length -1].id;
+  });
+
+  return updatedConversations;
 };

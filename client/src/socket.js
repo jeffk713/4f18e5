@@ -45,6 +45,9 @@ socket.on("connect", () => {
   socket.on("read-messages", (data) => {
     console.log("SOCKET CLIENT READ MESSAGE", data)
     const { conversationId } = data
+    const convo = store.getState().conversations.find((convo) => convo.id === conversationId);
+    if (!convo) return;
+    
     store.dispatch(readNewMessages(conversationId))
   });
 });
