@@ -14,7 +14,7 @@ class Conversations(APIView):
     TODO: for scalability, implement lazy loading"""
 
     def get(self, request: Request):
-        try:
+        # try:
             user = get_user(request)
 
             if user.is_anonymous:
@@ -44,7 +44,20 @@ class Conversations(APIView):
                         unread_messages.append(msg)
                     else:
                         break
-                return unread_messages
+                return len(unread_messages)
+            
+            def get_last_read_message_id_for_user(messages, user_id):
+                reversed_messages = messages
+                reversed_messages.reverse()
+                
+                last_read_message_id = None
+                
+                for msg in reversed_messages:
+                    if msg["isRead"] == True and msg["senderId"] != user_id:
+                        last_read_message_id = msg["id"]
+                        break
+                return last_read_message_id
+
             
             for convo in conversations:
                 convo_dict = {
@@ -53,11 +66,14 @@ class Conversations(APIView):
                         message.to_dict(["id", "text", "senderId", "createdAt", "isRead"])
                         for message in convo.messages.all()
                     ],
-                    "unreadMessages": len(get_num_unread_messages([
+                    "numUnreadMessages": get_num_unread_messages([
                         message.to_dict() for message in convo.messages.all()
-                    ]))
+                    ]),
+                    "lastReadMessageId": get_last_read_message_id_for_user([
+                        message.to_dict() for message in convo.messages.all()
+                    ], user_id)
                 }
-                # print(convo_dict)
+                print(convo_dict)
                 
                 # set properties for notification count and latest message preview
                 num_of_messages = len(convo_dict["messages"])
@@ -78,7 +94,7 @@ class Conversations(APIView):
 
                 conversations_response.append(convo_dict)
             conversations_response.sort(
-                key=lambda convo: convo["messages"][0]["createdAt"],
+                key=lambda convo: convo["messages"][len(convo["messages"])-1]["createdAt"],
                 reverse=True,
             )
 
@@ -86,5 +102,5 @@ class Conversations(APIView):
                 conversations_response,
                 safe=False,
             )
-        except Exception as e:
-            return HttpResponse(status=500)
+        # except Exception as e:
+        #     return HttpResponse(status=500)

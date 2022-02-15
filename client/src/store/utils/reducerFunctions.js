@@ -11,7 +11,7 @@ export const addMessageToStore = (state, payload) => {
     return [newConvo, ...state];
   }
 
-  return state.map((convo) => {
+  const newConversations = state.map((convo) => {
     if (convo.id === message.conversationId) {
       const newConvo = { ...convo };
       newConvo.messages = [...newConvo.messages, message];
@@ -20,6 +20,27 @@ export const addMessageToStore = (state, payload) => {
     } else {
       return convo;
     }
+  });
+  return newConversations
+};
+
+export const updateReadMessageToStore = (state, payload) => {
+  const { conversationId, lastReadMessageId } = payload;
+
+  const readConvo = state.find((convo) => convo.id === conversationId);
+  readConvo.lastReadMessageId = lastReadMessageId;
+
+  for (let i = readConvo.messages.length -1; i < 0; i --) {
+    if (readConvo.messages[i].isRead) break;
+    readConvo.messages[i].isRead = true;
+  }
+
+  return state.map((convo) => {
+    if (convo.id === conversationId) {
+      return readConvo;
+    } else {
+      return convo;
+    };
   });
 };
 
