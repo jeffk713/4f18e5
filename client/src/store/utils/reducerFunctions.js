@@ -87,7 +87,7 @@ export const addSearchedUsersToStore = (state, users) => {
     // only create a fake convo if we don't already have a convo with this user
     if (!currentUsers[user.id]) {
       let fakeConvo = { otherUser: user, messages: [] };
-      newState.push(fakeConvo);
+      newState.unshift(fakeConvo);
     }
   });
 
@@ -105,10 +105,6 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     } else {
       return convo;
     }
-  });
-
-  updatedConversations.sort((a, b) => {
-    return b.messages[b.messages.length - 1].id - a.messages[a.messages.length -1].id;
   });
 
   return updatedConversations;

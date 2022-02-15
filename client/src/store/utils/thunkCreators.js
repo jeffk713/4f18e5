@@ -99,6 +99,7 @@ export const postMessage = (body) => async (dispatch) => {
     const data = await saveMessage(body);
 
     if (!body.conversationId) {
+      console.log('NEW Convo messagee: ', data)
       dispatch(addConversation(body.recipientId, data.message));
     } else {
       dispatch(setNewMessage(data.message));
