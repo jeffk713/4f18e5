@@ -10,12 +10,16 @@ export const addMessageToStore = (state, payload) => {
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
-
+  console.log('SENDER INFO UPON SENDING MESSAGE: ', sender)
   const updatedConversations = state.map((convo) => {
     if (convo.id === message.conversationId) {
       const updatedConvo = { ...convo };
       updatedConvo.messages = [...updatedConvo.messages, message];
       updatedConvo.latestMessageText = message.text;
+      updatedConvo.unreadMessageData = { 
+        senderId: message.senderId,
+        numOfUnreadMessages: updatedConvo.unreadMessageData.numOfUnreadMessages + 1,
+      }
       return updatedConvo;
     } else {
       return convo;
@@ -101,6 +105,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       updatedConvo.id = message.conversationId
       updatedConvo.messages = [...updatedConvo.messages, message];
       updatedConvo.latestMessageText = message.text;
+      updatedConvo.unreadMessageData = { numOfUnreadMessages: 1, senderId: message.senderId }
       return updatedConvo;
     } else {
       return convo;

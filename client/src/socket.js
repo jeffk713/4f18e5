@@ -25,8 +25,11 @@ socket.on("connect", () => {
     console.log("SOCKET CLIENT RECEIVED MESSAGE", data)
     const userId = store.getState().user.id;
     const recipientId = data.recipientId;
+
     if (userId === recipientId) {
       store.dispatch(setNewMessage(data.message, data.sender));
+    } else {
+      return;
     }
 
     const convoId = data.message.conversationId;
