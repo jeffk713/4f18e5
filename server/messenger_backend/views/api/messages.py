@@ -11,7 +11,7 @@ class Messages(APIView):
     def post(self, request):
         try:
             user = get_user(request)
-            print(request.data)
+
             if user.is_anonymous:
                 return HttpResponse(status=401)
 
@@ -65,7 +65,6 @@ class Messages(APIView):
                 msg.isRead = True
                 msg.save()
                 print(msg.to_dict())
-            print('PATCH END POINT HIT')
             
             return JsonResponse({ "conversationId": conversation_id })
         # except Exception as e:

@@ -57,7 +57,6 @@ class Conversations(APIView):
                         message.to_dict() for message in convo.messages.all()
                     ]),
                 }
-                print(convo_dict)
                 
                 # set properties for notification count and latest message preview
                 num_of_messages = len(convo_dict["messages"])

@@ -22,7 +22,7 @@ socket.on("connect", () => {
   });
   
   socket.on("new-message", (data) => {
-    console.log("SOCKET CLIENT SET MESSAGE", data)
+    console.log("SOCKET CLIENT RECEIVED MESSAGE", data)
     const userId = store.getState().user.id;
     const recipientId = data.recipientId;
     if (userId === recipientId) {
@@ -31,13 +31,13 @@ socket.on("connect", () => {
 
     const convoId = data.message.conversationId;
     const convo = store.getState().conversations.find((convo) => convo.id === convoId);
+    if (!convo) return;
+
+    const otherUserUsername = convo.otherUser.username
     const activeConvo = store.getState().activeConversation;
 
-    if (convo && activeConvo) {
-      const otherUser = convo.otherUser.username;
-      if (otherUser === activeConvo) {
-        store.dispatch(readMessages({ conversationId: convoId }))
-      };
+    if (convo && activeConvo === otherUserUsername) {
+      store.dispatch(readMessages({ conversationId: convoId }))
     };
 
   });
