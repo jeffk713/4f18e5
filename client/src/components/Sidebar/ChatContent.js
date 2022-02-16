@@ -10,7 +10,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginLeft: 20,
-    flexGrow: 1,
+    width: "100%",
+    position: "relative",
   },
   username: {
     fontWeight: "bold",
@@ -21,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#9CADC8",
     letterSpacing: -0.17,
   },
+  newMessageBadge: {
+    position: "absolute",
+    right: 0,
+  }
 }));
 
 const ChatContent = (props) => {
@@ -43,7 +48,11 @@ const ChatContent = (props) => {
       </Box>
       {
         !!numOfUnreadMessages && senderId !== authUserId &&
-        <Badge badgeContent={numOfUnreadMessages} color="primary">
+        <Badge 
+          // className={classes.newMessageBadge} 
+          badgeContent={numOfUnreadMessages} 
+          color="primary"
+        >
           <MailIcon />
         </Badge>
       }

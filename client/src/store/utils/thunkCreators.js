@@ -1,5 +1,6 @@
 import axios from "axios";
 import socket from "../../socket";
+import store from '../'
 import {
   gotConversations,
   addConversation,
@@ -102,7 +103,7 @@ export const postMessage = (body) => async (dispatch) => {
       console.log('NEW Convo messagee: ', data)
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(store.getState().activeConversation, data.message));
     }
 
     sendMessage(data, body);

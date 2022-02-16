@@ -1,5 +1,5 @@
 export const addMessageToStore = (state, payload) => {
-  const { message, sender } = payload;
+  const { activeConversation, message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
     const newConvo = {
@@ -16,9 +16,13 @@ export const addMessageToStore = (state, payload) => {
       const updatedConvo = { ...convo };
       updatedConvo.messages = [...updatedConvo.messages, message];
       updatedConvo.latestMessageText = message.text;
-      updatedConvo.unreadMessageData = { 
-        senderId: message.senderId,
-        numOfUnreadMessages: updatedConvo.unreadMessageData.numOfUnreadMessages + 1,
+
+      // if the message goes into active chat, no action for unread message required.
+      if (activeConversation !== updatedConvo.otherUser.username) {
+        updatedConvo.unreadMessageData = { 
+          senderId: message.senderId,
+          numOfUnreadMessages: updatedConvo.unreadMessageData.numOfUnreadMessages + 1,
+        }
       }
       return updatedConvo;
     } else {

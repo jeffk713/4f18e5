@@ -1,3 +1,4 @@
+import store from './';
 import {
   addNewConvoToStore,
   addOnlineUserToStore,
@@ -27,10 +28,10 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (activeConversation, message, sender) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null },
+    payload: { activeConversation, message, sender: sender || null },
   };
 };
 
