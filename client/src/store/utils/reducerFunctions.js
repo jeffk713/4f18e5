@@ -32,6 +32,9 @@ export const addMessageToStore = (state, payload) => {
   });
 
   updatedConversations.sort((a, b) => {
+    // for conversation with no message
+    if (!a.messages.length || !b.messages.length ) return 0;
+
     return b.messages[b.messages.length - 1].id - a.messages[a.messages.length -1].id;
   });
 
