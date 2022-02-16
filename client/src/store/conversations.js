@@ -1,4 +1,3 @@
-import store from './';
 import {
   addNewConvoToStore,
   addOnlineUserToStore,
