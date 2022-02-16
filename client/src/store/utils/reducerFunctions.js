@@ -6,6 +6,7 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      unreadMessageData: { numOfUnreadMessages: 1, senderId: message.senderId }
     };
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
@@ -93,7 +94,11 @@ export const addSearchedUsersToStore = (state, users) => {
   users.forEach((user) => {
     // only create a fake convo if we don't already have a convo with this user
     if (!currentUsers[user.id]) {
-      let fakeConvo = { otherUser: user, messages: [] };
+      const fakeConvo = { 
+        otherUser: user, 
+        messages: [],
+        unreadMessageData: { numOfUnreadMessages: 0, senderId: null } 
+      };
       newState.unshift(fakeConvo);
     }
   });

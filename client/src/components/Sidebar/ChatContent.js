@@ -33,7 +33,6 @@ const ChatContent = (props) => {
 
   const { conversation, user } = props;
   const { latestMessageText, otherUser, unreadMessageData } = conversation;
-  const { numOfUnreadMessages, senderId } = unreadMessageData;
   const { id: authUserId } = user;
 
   return (
@@ -47,14 +46,15 @@ const ChatContent = (props) => {
         </Typography>
       </Box>
       {
-        !!numOfUnreadMessages && senderId !== authUserId &&
+        unreadMessageData &&
+        (!!unreadMessageData.numOfUnreadMessages && unreadMessageData.senderId !== authUserId &&
         <Badge 
           // className={classes.newMessageBadge} 
-          badgeContent={numOfUnreadMessages} 
+          badgeContent={unreadMessageData.numOfUnreadMessages} 
           color="primary"
         >
           <MailIcon />
-        </Badge>
+        </Badge>)
       }
     </Box>
   );
