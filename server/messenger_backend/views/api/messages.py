@@ -50,7 +50,7 @@ class Messages(APIView):
             return HttpResponse(status=500)
 
     def patch(self, request):
-        # try:
+        try:
             user = get_user(request)
             
             if user.is_anonymous:
@@ -66,5 +66,5 @@ class Messages(APIView):
                 msg.save()
             
             return JsonResponse({ "conversationId": conversation_id })
-        # except Exception as e:
-        #     return HttpResponse(status=500)
+        except Exception as e:
+            return HttpResponse(status=500)

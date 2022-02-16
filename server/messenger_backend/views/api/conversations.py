@@ -15,7 +15,7 @@ class Conversations(APIView):
     TODO: for scalability, implement lazy loading"""
 
     def get(self, request: Request):
-        # try:
+        try:
             user = get_user(request)
 
             if user.is_anonymous:
@@ -33,23 +33,7 @@ class Conversations(APIView):
             )
 
             conversations_response = []
-
-            # def get_unread_message_dict(messages):
-            #     # get message list ordered from lateset to oldest
-            #     reversed_messages = messages
-            #     reversed_messages.reverse()
-            #     unread_messages = []
-            #     sender_id = None
-
-            #     for msg in reversed_messages:
-            #         if not msg["isRead"]:
-            #             unread_messages.append(msg)
-            #             sender_id = msg["senderId"]
-            #         else:
-            #             break
-
-            #     return { "numOfUnreadMessages": len(unread_messages), "senderId": sender_id }
-
+            
             for convo in conversations:
                 convo_dict = {
                     "id": convo.id,
@@ -89,5 +73,5 @@ class Conversations(APIView):
                 conversations_response,
                 safe=False,
             )
-        # except Exception as e:
-        #     return HttpResponse(status=500)
+        except Exception as e:
+            return HttpResponse(status=500)
