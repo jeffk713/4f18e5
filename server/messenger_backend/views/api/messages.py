@@ -64,7 +64,6 @@ class Messages(APIView):
             for msg in unread_messages:
                 msg.isRead = True
                 msg.save()
-                print(msg.to_dict())
             
             return JsonResponse({ "conversationId": conversation_id })
         # except Exception as e:

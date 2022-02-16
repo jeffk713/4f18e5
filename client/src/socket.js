@@ -22,7 +22,6 @@ socket.on("connect", () => {
   });
   
   socket.on("new-message", (data) => {
-    console.log("SOCKET CLIENT RECEIVED MESSAGE", data)
     const userId = store.getState().user.id;
     const activeConversation = store.getState().activeConversation
     const recipientId = data.recipientId;
@@ -47,7 +46,6 @@ socket.on("connect", () => {
   });
 
   socket.on("read-messages", (data) => {
-    console.log("SOCKET CLIENT READ MESSAGE", data)
     const { conversationId } = data
     const convo = store.getState().conversations.find((convo) => convo.id === conversationId);
     if (!convo) return;

@@ -32,7 +32,6 @@ def new_message(sid, message):
 
 @sio.on("read-messages")
 def read_messages(sid, last_read_message):
-    print("SOCKET READ", last_read_message)
     sio.emit(
         "read-messages",
         { "conversationId": last_read_message["conversationId"], },

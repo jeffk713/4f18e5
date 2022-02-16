@@ -10,7 +10,7 @@ export const addMessageToStore = (state, payload) => {
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
-  console.log('SENDER INFO UPON SENDING MESSAGE: ', sender)
+
   const updatedConversations = state.map((convo) => {
     if (convo.id === message.conversationId) {
       const updatedConvo = { ...convo };

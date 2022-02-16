@@ -100,7 +100,6 @@ export const postMessage = (body) => async (dispatch) => {
     const data = await saveMessage(body);
 
     if (!body.conversationId) {
-      console.log('NEW Convo messagee: ', data)
       dispatch(addConversation(body.recipientId, data.message));
     } else {
       dispatch(setNewMessage(store.getState().activeConversation, data.message));
@@ -128,7 +127,6 @@ const emitReadMessages = (conversationId) => {
 export const readMessages = (body) => async (dispatch) => {
   try {
     const res = await axios.patch("/api/messages", body);
-    console.log('PATCH RES: ', res.data)
     const { conversationId } = res.data;
 
     dispatch(readNewMessages(conversationId))
