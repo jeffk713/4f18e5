@@ -6,6 +6,7 @@ from messenger_backend.models import Conversation, Message
 from online_users import online_users
 from rest_framework.views import APIView
 from rest_framework.request import Request
+from messenger_backend.views.view_utils.conversations_utils import ConversationsUtils
 
 
 class Conversations(APIView):
@@ -33,21 +34,21 @@ class Conversations(APIView):
 
             conversations_response = []
 
-            def get_unread_message_dict(messages):
-                # get message list ordered from lateset to oldest
-                reversed_messages = messages
-                reversed_messages.reverse()
-                unread_messages = []
-                sender_id = None
+            # def get_unread_message_dict(messages):
+            #     # get message list ordered from lateset to oldest
+            #     reversed_messages = messages
+            #     reversed_messages.reverse()
+            #     unread_messages = []
+            #     sender_id = None
 
-                for msg in reversed_messages:
-                    if not msg["isRead"]:
-                        unread_messages.append(msg)
-                        sender_id = msg["senderId"]
-                    else:
-                        break
+            #     for msg in reversed_messages:
+            #         if not msg["isRead"]:
+            #             unread_messages.append(msg)
+            #             sender_id = msg["senderId"]
+            #         else:
+            #             break
 
-                return { "numOfUnreadMessages": len(unread_messages), "senderId": sender_id }
+            #     return { "numOfUnreadMessages": len(unread_messages), "senderId": sender_id }
 
             for convo in conversations:
                 convo_dict = {
@@ -56,7 +57,7 @@ class Conversations(APIView):
                         message.to_dict(["id", "text", "senderId", "createdAt", "isRead"])
                         for message in convo.messages.all()
                     ],
-                    "unreadMessageData": get_unread_message_dict([
+                    "unreadMessageData": ConversationsUtils.get_unread_message_dict([
                         message.to_dict() for message in convo.messages.all()
                     ]),
                 }
