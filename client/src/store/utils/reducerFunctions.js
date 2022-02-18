@@ -44,15 +44,22 @@ export const addMessageToStore = (state, payload) => {
 export const updateReadMessageToStore = (state, conversationId) => {
   return state.map((convo) => {
     if (convo.id === conversationId) {
-      const readConvo = { ...convo }
-      for (let i = readConvo.messages.length - 1; i >= 0; i--) {
-        if (readConvo.messages[i].isRead){ 
-          break;
-        }
-        readConvo.messages[i].isRead = true;
-      };
+      const readConvo = { ...convo };
 
-      readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null }
+      // reverse the array to have unread messages come first
+      readConvo.messages.reverse();
+      readConvo.messages.some((msg) => {
+        if (msg.isRead) {
+          console.log("already read message", msg);
+          return true;
+        };
+        msg.isRead = true;
+        return false;
+      });
+      // reverse back to have the original order
+      readConvo.messages.reverse();
+
+      readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null };
 
       return readConvo;
     } else {
