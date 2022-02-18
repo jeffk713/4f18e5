@@ -6,13 +6,13 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
-      unreadMessageData: { numOfUnreadMessages: 1, senderId: message.senderId }
+      unreadMessageData: { numOfUnreadMessages: 1, senderId: message.senderId },
     };
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
 
-  const updatedConversations = state.map((convo) => {
+  const updatedConversations = state.map(convo => {
     if (convo.id === message.conversationId) {
       const updatedConvo = { ...convo };
       updatedConvo.messages = [...updatedConvo.messages, message];
@@ -20,10 +20,11 @@ export const addMessageToStore = (state, payload) => {
 
       // if the message goes into active chat, no action for unread message required.
       if (activeConversation !== updatedConvo.otherUser.username) {
-        updatedConvo.unreadMessageData = { 
+        updatedConvo.unreadMessageData = {
           senderId: message.senderId,
-          numOfUnreadMessages: updatedConvo.unreadMessageData.numOfUnreadMessages + 1,
-        }
+          numOfUnreadMessages:
+            updatedConvo.unreadMessageData.numOfUnreadMessages + 1,
+        };
       }
       return updatedConvo;
     } else {
@@ -33,42 +34,40 @@ export const addMessageToStore = (state, payload) => {
 
   updatedConversations.sort((a, b) => {
     // for conversation with no message
-    if (!a.messages.length || !b.messages.length ) return 0;
+    if (!a.messages.length || !b.messages.length) return 0;
 
-    return b.messages[b.messages.length - 1].id - a.messages[a.messages.length -1].id;
+    return (
+      b.messages[b.messages.length - 1].id -
+      a.messages[a.messages.length - 1].id
+    );
   });
 
   return updatedConversations;
 };
 
 export const updateReadMessageToStore = (state, conversationId) => {
-  return state.map((convo) => {
+  return state.map(convo => {
     if (convo.id === conversationId) {
       const readConvo = { ...convo };
 
-      // reverse the array to have unread messages come first
-      readConvo.messages.reverse();
-      readConvo.messages.some((msg) => {
-        if (msg.isRead) {
-          return true;
-        };
-        msg.isRead = true;
-        return false;
-      });
-      // reverse back to have the original order
-      readConvo.messages.reverse();
+      for (let i = readConvo.messages.length - 1; i >= 0; i--) {
+        if (readConvo.messages[i].isRead) {
+          break;
+        }
+        readConvo.messages[i].isRead = true;
+      }
 
       readConvo.unreadMessageData = { numOfUnreadMessages: 0, senderId: null };
 
       return readConvo;
     } else {
       return convo;
-    };
+    }
   });
 };
 
 export const addOnlineUserToStore = (state, id) => {
-  return state.map((convo) => {
+  return state.map(convo => {
     if (convo.otherUser.id === id) {
       const convoCopy = { ...convo };
       convoCopy.otherUser = { ...convoCopy.otherUser, online: true };
@@ -80,7 +79,7 @@ export const addOnlineUserToStore = (state, id) => {
 };
 
 export const removeOfflineUserFromStore = (state, id) => {
-  return state.map((convo) => {
+  return state.map(convo => {
     if (convo.otherUser.id === id) {
       const convoCopy = { ...convo };
       convoCopy.otherUser = { ...convoCopy.otherUser, online: false };
@@ -95,18 +94,18 @@ export const addSearchedUsersToStore = (state, users) => {
   const currentUsers = {};
 
   // make table of current users so we can lookup faster
-  state.forEach((convo) => {
+  state.forEach(convo => {
     currentUsers[convo.otherUser.id] = true;
   });
 
   const newState = [...state];
-  users.forEach((user) => {
+  users.forEach(user => {
     // only create a fake convo if we don't already have a convo with this user
     if (!currentUsers[user.id]) {
-      const fakeConvo = { 
-        otherUser: user, 
+      const fakeConvo = {
+        otherUser: user,
         messages: [],
-        unreadMessageData: { numOfUnreadMessages: 0, senderId: null } 
+        unreadMessageData: { numOfUnreadMessages: 0, senderId: null },
       };
       newState.unshift(fakeConvo);
     }
@@ -116,13 +115,16 @@ export const addSearchedUsersToStore = (state, users) => {
 };
 
 export const addNewConvoToStore = (state, recipientId, message) => {
-  const updatedConversations = state.map((convo) => {
+  const updatedConversations = state.map(convo => {
     if (convo.otherUser.id === recipientId) {
       const updatedConvo = { ...convo };
-      updatedConvo.id = message.conversationId
+      updatedConvo.id = message.conversationId;
       updatedConvo.messages = [...updatedConvo.messages, message];
       updatedConvo.latestMessageText = message.text;
-      updatedConvo.unreadMessageData = { numOfUnreadMessages: 1, senderId: message.senderId }
+      updatedConvo.unreadMessageData = {
+        numOfUnreadMessages: 1,
+        senderId: message.senderId,
+      };
       return updatedConvo;
     } else {
       return convo;
