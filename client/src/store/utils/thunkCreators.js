@@ -1,10 +1,12 @@
 import axios from "axios";
 import socket from "../../socket";
+import store from '../'
 import {
   gotConversations,
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  readNewMessages,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -100,7 +102,7 @@ export const postMessage = (body) => async (dispatch) => {
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(store.getState().activeConversation, data.message));
     }
 
     sendMessage(data, body);
@@ -113,6 +115,22 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);
     dispatch(setSearchedUsers(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const emitReadMessages = (conversationId) => {
+  socket.emit("read-messages", { conversationId });
+};
+
+export const readMessages = (body) => async (dispatch) => {
+  try {
+    const res = await axios.patch("/api/messages", body);
+    const { conversationId } = res.data;
+
+    dispatch(readNewMessages(conversationId))
+    emitReadMessages(conversationId)
   } catch (error) {
     console.error(error);
   }

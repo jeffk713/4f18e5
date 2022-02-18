@@ -6,6 +6,7 @@ from messenger_backend.models import Conversation, Message
 from online_users import online_users
 from rest_framework.views import APIView
 from rest_framework.request import Request
+from messenger_backend.views.view_utils.conversations_utils import ConversationsUtils
 
 
 class Conversations(APIView):
@@ -32,19 +33,21 @@ class Conversations(APIView):
             )
 
             conversations_response = []
-
+            
             for convo in conversations:
                 convo_dict = {
                     "id": convo.id,
                     "messages": [
-                        message.to_dict(["id", "text", "senderId", "createdAt"])
+                        message.to_dict(["id", "text", "senderId", "createdAt", "isRead"])
                         for message in convo.messages.all()
                     ],
+                    "unreadMessageData": ConversationsUtils.get_unread_message_dict([
+                        message.to_dict() for message in convo.messages.all()
+                    ]),
                 }
-
+                
                 # set properties for notification count and latest message preview
-                num_of_messages = len(convo_dict["messages"])
-                convo_dict["latestMessageText"] = convo_dict["messages"][num_of_messages-1]["text"]
+                convo_dict["latestMessageText"] = convo_dict["messages"][-1]["text"]
 
                 # set a property "otherUser" so that frontend will have easier access
                 user_fields = ["id", "username", "photoUrl"]
@@ -61,7 +64,7 @@ class Conversations(APIView):
 
                 conversations_response.append(convo_dict)
             conversations_response.sort(
-                key=lambda convo: convo["messages"][len(convo["messages"])-1]["createdAt"],
+                key=lambda convo: convo["messages"][-1]["createdAt"],
                 reverse=True,
             )
 

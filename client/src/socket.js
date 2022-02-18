@@ -1,26 +1,61 @@
-import io from "socket.io-client";
-import store from "./store";
+import io from 'socket.io-client';
+import store from './store';
 import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
-} from "./store/conversations";
+  readNewMessages,
+} from './store/conversations';
+import { readMessages } from './store/utils/thunkCreators';
 
 const socket = io(window.location.origin);
 
-socket.on("connect", () => {
-  console.log("connected to server");
+socket.on('connect', () => {
+  console.log('connected to server');
 
-  socket.on("add-online-user", (id) => {
+  socket.on('add-online-user', id => {
     store.dispatch(addOnlineUser(id));
   });
 
-  socket.on("remove-offline-user", (id) => {
+  socket.on('remove-offline-user', id => {
     store.dispatch(removeOfflineUser(id));
   });
-  
-  socket.on("new-message", (data) => {
-    store.dispatch(setNewMessage(data.message, data.sender));
+
+  socket.on('new-message', data => {
+    const userId = store.getState().user.id;
+    const activeConversation = store.getState().activeConversation;
+    const recipientId = data.recipientId;
+
+    if (userId === recipientId) {
+      store.dispatch(
+        setNewMessage(activeConversation, data.message, data.sender)
+      );
+    } else {
+      return;
+    }
+
+    const convoId = data.message.conversationId;
+    const convo = store
+      .getState()
+      .conversations.find(convo => convo.id === convoId);
+    if (!convo) return;
+
+    const otherUserUsername = convo.otherUser.username;
+    const activeConvo = store.getState().activeConversation;
+
+    if (convo && activeConvo === otherUserUsername) {
+      store.dispatch(readMessages({ conversationId: convoId }));
+    }
+  });
+
+  socket.on('read-messages', data => {
+    const { conversationId } = data;
+    const convo = store
+      .getState()
+      .conversations.find(convo => convo.id === conversationId);
+    if (!convo) return;
+
+    store.dispatch(readNewMessages(conversationId));
   });
 });
 
