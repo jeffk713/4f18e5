@@ -55,10 +55,18 @@ class Messages(APIView):
             
             if user.is_anonymous:
                 return HttpResponse(status=401)
-
+            
             body = request.data
             sender_id = user.id
             conversation_id = body.get("conversationId")
+
+            # if conversation is not in user's conversations return status 401
+            user_conversation_ids = [ 
+                convo.id for convo 
+                in Conversation.objects.filter(Q(user1=sender_id) | Q(user2=sender_id))
+            ]
+            if not conversation_id in user_conversation_ids: 
+                return  HttpResponse(status=401)
 
             unread_messages = Message.objects.filter(Q(conversation=conversation_id) & Q(isRead=False))
             for msg in unread_messages:
