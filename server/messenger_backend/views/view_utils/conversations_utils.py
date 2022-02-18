@@ -1,12 +1,9 @@
 class ConversationsUtils():
     def get_unread_message_dict(messages):
-        # get message list ordered from lateset to oldest
-        reversed_messages = messages
-        reversed_messages.reverse()
         unread_messages = []
         sender_id = None
 
-        for msg in reversed_messages:
+        for msg in reversed(messages):
             if not msg["isRead"]:
                 unread_messages.append(msg)
                 sender_id = msg["senderId"]
