@@ -2,15 +2,17 @@ from django.db import models
 
 from . import utils
 from .conversation import Conversation
+from .chat import Chat
 
 
 class Message(utils.CustomModel):
     text = models.TextField(null=False)
     senderId = models.IntegerField(null=False)
-    conversation = models.ForeignKey(
-        Conversation,
+    chat = models.ForeignKey(
+        Chat,
+        null=True,
         on_delete=models.CASCADE,
-        db_column="conversationId",
+        db_column="chatId",
         related_name="messages",
         related_query_name="message"
     )
