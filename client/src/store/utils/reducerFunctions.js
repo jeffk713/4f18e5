@@ -50,7 +50,6 @@ export const updateReadMessageToStore = (state, conversationId) => {
       readConvo.messages.reverse();
       readConvo.messages.some((msg) => {
         if (msg.isRead) {
-          console.log("already read message", msg);
           return true;
         };
         msg.isRead = true;
